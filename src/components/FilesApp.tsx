@@ -1,87 +1,122 @@
 // src/components/FilesApp.tsx
 import React from 'react';
-import { Folder, ExternalLink, HardDrive } from 'lucide-react';
+import { ExternalLink, ShieldAlert, Lock, Unlock, Database, Sliders, Terminal } from 'lucide-react';
+import type { SystemTheme } from '../App';
 
-interface SystemFile {
-  name: string;
-  size: string;
-  type: string;
-  description: string;
-  targetUrl: string;
+interface FilesAppProps {
+  isUnlocked: boolean;
+  theme: SystemTheme;
 }
 
-export const FilesApp: React.FC = () => {
-  // Mapping out your operational template assets to your public web stores
-  const localFiles: SystemFile[] = [
-    {
-      name: 'AI_Ops_Hub_v1.0.ntn',
-      size: '4.2 MB',
-      type: 'Notion Template',
-      description: 'Centralized neural workspace command array.',
-      targetUrl: 'https://thedigitalsabio.gumroad.com/l/operations-suite', // Swap with your actual live Gumroad/Payhip link
-    },
-    {
-      name: 'Master_SOP_Workflow.ntn',
-      size: '8.7 MB',
-      type: 'Notion Template',
-      description: 'Standard operational standard blueprint logs.',
-      targetUrl: 'https://thedigitalsabio.gumroad.com/l/operations-suite',
-    },
-    {
-      name: 'SaaS_Tracker_Auditor.ntn',
-      size: '2.9 MB',
-      type: 'Notion Template',
-      description: 'Tech stack asset overhead analyzer matrix.',
-      targetUrl: 'https://thedigitalsabio.gumroad.com/l/operations-suite',
-    },
-  ];
-
+export const FilesApp: React.FC<FilesAppProps> = ({ isUnlocked, theme }) => {
   return (
-    <div className="flex flex-col h-full font-mono text-xs">
+    <div className="flex flex-col h-full font-mono text-xs select-none">
       
-      {/* Directory Storage Header */}
-      <div className="bg-black/30 p-3 rounded-lg border border-white/5 flex justify-between items-center mb-4">
+      {/* DIRECTORY STORAGE BLOCK HEADER */}
+      <div className="bg-black/30 p-3 rounded-lg border border-white/5 flex justify-between items-center mb-3">
         <div className="flex items-center gap-3">
-          <HardDrive size={18} className="text-vice-pink" />
+          <ShieldAlert size={18} className={theme === 'amber' ? 'text-amber-500' : theme === 'synthwave' ? 'text-emerald-400' : 'text-vice-pink'} />
           <div>
-            <span className="text-white/40 block tracking-widest text-[10px] uppercase">Storage Volume</span>
-            <span className="text-white font-bold tracking-wider">SECURE_NODE_DRIVE // LND_01</span>
+            <span className="text-white/40 block tracking-widest text-[9px] uppercase">PASS HINT: LEONIDA + SECTOR_NUMBER (6)</span>
+            <span className="text-white font-bold tracking-wider">NODE_DRIVE // SYSTEM_FILES</span>
           </div>
         </div>
-        <span className="text-white/30 text-[10px]">CAPACITY: 15.8 GB FREE</span>
       </div>
 
-      {/* Directory File Grid */}
+      {/* PORTFOLIO MATRIX DIRECTORY GRID */}
       <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-        {localFiles.map((file) => (
+        
+        <span className="text-[10px] text-white/30 tracking-widest uppercase block mb-1 font-bold">
+          // Deployed Operational Systems Portfolio
+        </span>
+
+        {/* 1. AI OPERATIONS HUB */}
+        <a 
+          href="https://thedigitalsabio.gumroad.com/l/operations-suite"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between bg-black/20 border border-white/5 hover:border-cyan-500/30 hover:bg-cyan-500/5 p-3 rounded-lg transition duration-150 group cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <Terminal size={18} className="text-cyan-400 group-hover:scale-105 transition" />
+            <div>
+              <span className="text-white font-bold block group-hover:text-cyan-400 transition">AI_Operations_Hub.md</span>
+              <span className="text-[10px] text-white/40">Centralized neural workspace command array layout.</span>
+            </div>
+          </div>
+          <ExternalLink size={14} className="text-white/20 group-hover:text-cyan-400 transition" />
+        </a>
+
+        {/* 2. MASTER SOP & WORKFLOW LIBRARY */}
+        <a 
+          href="https://thedigitalsabio.gumroad.com/l/operations-suite"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between bg-black/20 border border-white/5 hover:border-purple-500/30 hover:bg-purple-500/5 p-3 rounded-lg transition duration-150 group cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <Sliders size={18} className="text-purple-400 group-hover:scale-105 transition" />
+            <div>
+              <span className="text-white font-bold block group-hover:text-purple-400 transition">Master_SOP_Workflow_Library.md</span>
+              <span className="text-[10px] text-white/40">Standard operational standardized framework logs.</span>
+            </div>
+          </div>
+          <ExternalLink size={14} className="text-white/20 group-hover:text-purple-400 transition" />
+        </a>
+
+        {/* 3. SAAS TRACKER & TECH STACK AUDITOR */}
+        <a 
+          href="https://thedigitalsabio.gumroad.com/l/operations-suite"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between bg-black/20 border border-white/5 hover:border-pink-500/30 hover:bg-pink-500/5 p-3 rounded-lg transition duration-150 group cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <Database size={18} className="text-pink-400 group-hover:scale-105 transition" />
+            <div>
+              <span className="text-white font-bold block group-hover:text-pink-400 transition">SaaS_Tracker_Tech_Auditor.md</span>
+              <span className="text-[10px] text-white/40">Active cloud subscription metrics & expenditure array.</span>
+            </div>
+          </div>
+          <ExternalLink size={14} className="text-white/20 group-hover:text-pink-400 transition" />
+        </a>
+
+        <div className="border-t border-white/5 my-3 pt-2" />
+
+        {/* SECURITY CONDITIONAL ACCESSED GATEWAY */}
+        <span className="text-[10px] text-white/30 tracking-widest uppercase block mb-1 font-bold">
+          // Protected Main Ecosystem Node
+        </span>
+
+        {isUnlocked ? (
           <a
-            key={file.name}
-            href={file.targetUrl}
-            target="_blank"
+            href="https://thedigitalsabio.gumroad.com/l/operations-suite" 
+            target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center justify-between bg-black/10 hover:bg-vice-pink/5 border border-white/5 hover:border-vice-pink/40 p-3 rounded-lg transition duration-150 group cursor-pointer"
+            className="flex items-center justify-between bg-black/20 border border-emerald-500/30 hover:bg-emerald-500/5 p-3 rounded-lg transition duration-150 group cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <Folder size={20} className="text-vice-pink group-hover:scale-110 transition-transform" />
+              <Unlock size={18} className="text-emerald-400 animate-pulse" />
               <div>
-                <span className="text-white font-bold block">{file.name}</span>
-                <span className="text-[10px] text-white/40 block">
-                  {file.type} • {file.size}
-                </span>
-                <span className="text-[11px] text-white/60 block mt-1 font-sans italic">
-                  {file.description}
-                </span>
+                <span className="text-emerald-400 font-bold block">SECRET_MARKETPLACE_GATEWAY.lnk</span>
+                <span className="text-[10px] text-emerald-400/70">Ecosystem decrypted! Click to unpack premium workspace bundle.</span>
               </div>
             </div>
-
-            {/* Launch Out Indicator icon */}
-            <div className="text-white/30 group-hover:text-vice-pink transition-colors pl-2">
-              <ExternalLink size={16} />
-            </div>
+            <ExternalLink size={14} className="text-emerald-400" />
           </a>
-        ))}
-      </div>
+        ) : (
+          <div className="flex items-center justify-between bg-black/40 border border-red-500/10 p-3 rounded-lg select-none opacity-70">
+            <div className="flex items-center gap-3">
+              <Lock size={18} className="text-red-500/60" />
+              <div>
+                <span className="text-red-500/60 font-bold block">FULL_OPERATIONS_SUITE_BUNDLE.enc</span>
+                <span className="text-[10px] text-white/20">LOCKED // Run 'unlock [password]' protocol inside core terminal.</span>
+              </div>
+            </div>
+          </div>
+        )}
 
+      </div>
     </div>
   );
 };

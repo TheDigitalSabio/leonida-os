@@ -1,92 +1,103 @@
 // src/components/BawsaqApp.tsx
-import React from 'react';
-import { ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { SystemTheme } from '../App';
 
-interface StockAsset {
-  ticker: string;
-  name: string;
-  price: string;
-  change: string;
-  isPositive: boolean;
-  volume: string;
+interface BawsaqAppProps {
+  theme: SystemTheme;
 }
 
-export const BawsaqApp: React.FC = () => {
-  // Mapping your product assets dynamically into a premium stock index structure
-  const marketAssets: StockAsset[] = [
-    {
-      ticker: 'AIOH',
-      name: 'AI Operations Hub',
-      price: '$47.00',
-      change: '+14.2%',
-      isPositive: true,
-      volume: '8.4K units',
-    },
-    {
-      ticker: 'MSOP',
-      name: 'Master SOP & Workflow Library',
-      price: '$39.00',
-      change: '+8.7%',
-      isPositive: true,
-      volume: '12.1K units',
-    },
-    {
-      ticker: 'SSTK',
-      name: 'SaaS Tracker & Tech Stack Auditor',
-      price: '$29.00',
-      change: '-2.4%',
-      isPositive: false,
-      volume: '5.2K units',
-    },
-  ];
+export const BawsaqApp: React.FC<BawsaqAppProps> = ({ theme }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [prices, setPrices] = useState<number[]>([40, 45, 42, 48, 46, 52, 50, 58, 55, 64]);
+
+  // Handle live stock index jittering loops
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrices((prev) => {
+        const nextList = [...prev.slice(1)];
+        const lastPrice = prev[prev.length - 1];
+        const drift = (Math.random() - 0.48) * 6; // Slight upward bias
+        nextList.push(Math.max(20, Math.min(100, lastPrice + drift)));
+        return nextList;
+      });
+    }, 800);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Handle active Canvas graphic drawing engine
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Pick the chart stroke line filter based on active system theme accents
+    let strokeColor = '#38bdf8'; // vice cyan
+    if (theme === 'synthwave') strokeColor = '#34d399'; // synthwave emerald
+    if (theme === 'amber') strokeColor = '#f59e0b'; // retro amber
+
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = strokeColor;
+
+    const step = canvas.width / (prices.length - 1);
+    prices.forEach((price, idx) => {
+      const x = idx * step;
+      // Invert Y axis since HTML canvas 0,0 anchors to top-left
+      const y = canvas.height - (price / 100) * canvas.height;
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }, [prices, theme]);
 
   return (
     <div className="flex flex-col h-full font-mono text-xs">
-      {/* Index Header Banner */}
-      <div className="bg-black/30 p-3 rounded-lg border border-white/5 flex justify-between items-center mb-4">
+      <div className="bg-black/40 p-2 border border-white/5 rounded-lg mb-3 flex justify-between items-center">
         <div>
-          <span className="text-white/40 block tracking-widest text-[10px] uppercase">Market Index</span>
-          <span className="text-rockstar-accent font-bold text-sm tracking-wider">LEONIDA EXCHANGE // LNDQ</span>
+          <span className="text-[10px] text-white/30 block">TICKER INDEX</span>
+          <span className="font-bold text-white tracking-wider">LNDQ // MARKET METRICS</span>
         </div>
-        <div className="flex items-center gap-2 text-right">
-          <Activity size={16} className="text-vice-cyan animate-pulse" />
-          <span className="text-vice-cyan font-bold text-xs tracking-widest animate-pulse">LIVE INDEX FEED</span>
-        </div>
+        <span className="text-emerald-400 font-bold animate-pulse">● LIVE VALUE DATA FEED</span>
       </div>
 
-      {/* Asset Table Matrix */}
-      <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-        <div className="grid grid-cols-4 text-[10px] text-white/40 tracking-wider border-b border-white/5 pb-1 px-2 uppercase">
-          <div>Asset // Ticker</div>
-          <div className="text-right">Price</div>
-          <div className="text-right">24H Change</div>
-          <div className="text-right hidden sm:block">Volume</div>
-        </div>
+      {/* RENDER DYNAMIC CANVAS PLOT CHART */}
+      <div className="bg-black/20 border border-white/5 p-2 rounded-lg mb-3">
+        <canvas ref={canvasRef} width={480} height={100} className="w-full h-[100px]" />
+      </div>
 
-        {marketAssets.map((asset) => (
-          <div 
-            key={asset.ticker} 
-            className="grid grid-cols-4 items-center bg-black/10 hover:bg-white/5 border border-white/5 hover:border-vice-cyan/30 p-3 rounded-lg transition duration-150 group"
-          >
-            <div>
-              <span className="text-vice-cyan font-bold block group-hover:scale-105 transition-transform origin-left">{asset.ticker}</span>
-              <span className="text-[10px] text-white/50 truncate block max-w-[120px] sm:max-w-none">{asset.name}</span>
-            </div>
-            
-            <div className="text-right text-white font-bold text-sm">
-              {asset.price}
-            </div>
-
-            <div className={`text-right flex items-center justify-end gap-0.5 font-bold ${asset.isPositive ? 'text-green-400' : 'text-red-400'}`}>
-              {asset.isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-              {asset.change}
-            </div>
-
-            <div className="text-right text-white/40 hidden sm:block">
-              {asset.volume}
-            </div>
+      {/* ASSET STOCK DATA LIST */}
+      <div className="space-y-1 bg-black/40 border border-white/5 p-2 rounded-lg flex-1 overflow-y-auto">
+        <div className="flex justify-between items-center text-[10px] text-white/30 pb-1 border-b border-white/5 mb-1 uppercase tracking-wider">
+          <span>Asset / Ticker</span>
+          <div className="flex gap-8">
+            <span>Price</span>
+            <span>Volume</span>
           </div>
-        ))}
+        </div>
+        <div className="flex justify-between items-center py-1">
+          <span className="text-cyan-400 font-bold">AIOM // AI Operations Hub</span>
+          <div className="flex gap-6 font-bold">
+            <span className="text-emerald-400">$47.00</span>
+            <span className="text-white/60">8.4K</span>
+          </div>
+        </div>
+        <div className="flex justify-between items-center py-1">
+          <span className="text-purple-400 font-bold">MSOP // Master SOP Library</span>
+          <div className="flex gap-6 font-bold">
+            <span className="text-emerald-400">$30.00</span>
+            <span className="text-white/60">12.1K</span>
+          </div>
+        </div>
+        <div className="flex justify-between items-center py-1">
+          <span className="text-pink-400 font-bold">SSTK // SaaS Tech Tracker</span>
+          <div className="flex gap-6 font-bold">
+            <span className="text-emerald-400">$29.00</span>
+            <span className="text-white/60">5.2K</span>
+          </div>
+        </div>
       </div>
     </div>
   );
