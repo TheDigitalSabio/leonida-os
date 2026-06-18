@@ -12,7 +12,7 @@ export const TerminalApp: React.FC<TerminalAppProps> = ({ setTheme, setIsFileUnl
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<Array<{ text: string; type: string }>>([
     { text: '> DEPLOYING UNDERGROUND CORE SYSTEMS...', type: 'success' },
-    { text: "> HINT: EXPLORE LOCAL STORAGE DIRECTORY FOR CLUES. TYPE 'HELP'.", type: 'system' },
+    { text: "> SYSTEM READY. TYPE 'HELP' FOR PROTOCOLS.", type: 'system' },
   ]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -31,16 +31,31 @@ export const TerminalApp: React.FC<TerminalAppProps> = ({ setTheme, setIsFileUnl
     switch (command) {
       case 'help':
         newHistory.push(
-          { text: '— AVAILABLE CORE PROTOCOLS —', type: 'system' },
+          { text: '— AVAILABLE CORE PROTOCOLS —', type: 'hint' },
+          { text: '  hint                       - Reveal system security clue.', type: 'system' },
+          { text: '  projects                   - Access external project simulator.', type: 'system' },
           { text: '  theme [vice|synthwave|amber] - Shift system pipeline accents.', type: 'system' },
-          { text: '  unlock [password]          - Decrypt secure storage node arrays.', type: 'system' },
+          { text: '  unlock [password]          - Decrypt secure storage node.', type: 'system' },
           { text: '  clear                      - Flush terminal screen cache.', type: 'system' }
         );
         break;
+      case 'hint':
+        newHistory.push({ text: 'SYSTEM_SECURITY_HINT: LEONIDA + SECTOR_NUMBER (6).', type: 'hint' });
+        break;
+      case 'projects':
+        newHistory.push(
+          { text: '— INITIALIZING EXTERNAL PROJECT NODE —', type: 'hint' },
+          { text: '  [01] CYBER-NET-SIMULATOR: https://cyber-net-simulator.vercel.app', type: 'system' },
+          { text: '  [02] AI OPERATIONS HUB: gumroad.com/l/operations-suite', type: 'system' },
+          { text: '  [03] MASTER SOP LIBRARY: gumroad.com/l/operations-suite', type: 'system' },
+          { text: '  > [!] ACCESSING NODE 01... SUCCESS.', type: 'success' }
+        );
+        window.open('https://cyber-net-simulator.vercel.app', '_blank');
+        break;
       case 'theme':
-        if (['vice', 'synthwave', 'amber'].includes(arg)) {
+        if (['vice', 'synthwave', 'amber'].includes(arg || '')) {
           setTheme(arg as SystemTheme);
-          newHistory.push({ text: `SYSTEM INTERFACE RECONFIGURED TO: ${arg.toUpperCase()}`, type: 'success' });
+          newHistory.push({ text: `SYSTEM INTERFACE RECONFIGURED TO: ${arg!.toUpperCase()}`, type: 'success' });
         } else {
           newHistory.push({ text: 'ERROR: INVALID ACCESS SPECIFICATION. USE VICE, SYNTHWAVE, OR AMBER.', type: 'error' });
         }
@@ -69,10 +84,24 @@ export const TerminalApp: React.FC<TerminalAppProps> = ({ setTheme, setIsFileUnl
   };
 
   return (
-    <div className="flex flex-col h-full font-mono text-xs">
+    <div className="flex flex-col h-full font-mono text-xs crt-terminal-effect">
+      <style>{`
+        .crt-terminal-effect {
+          text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
       <div className="flex-1 overflow-y-auto space-y-1.5 pb-4">
         {history.map((log, i) => (
-          <div key={i} className={`${log.type === 'success' ? textColors[theme] : log.type === 'system' ? 'text-white/40' : log.type === 'error' ? 'text-red-400 font-bold' : log.type === 'input' ? 'text-cyan-400' : ''}`}>
+          <div 
+            key={i} 
+            className={`
+              ${log.type === 'success' ? textColors[theme] : ''} 
+              ${log.type === 'hint' ? 'text-cyan-400 font-bold' : ''} 
+              ${log.type === 'system' ? 'text-white/60' : ''} 
+              ${log.type === 'error' ? 'text-red-500 font-bold' : ''} 
+              ${log.type === 'input' ? 'text-white font-bold' : ''}
+            `}
+          >
             {log.text}
           </div>
         ))}
@@ -81,8 +110,12 @@ export const TerminalApp: React.FC<TerminalAppProps> = ({ setTheme, setIsFileUnl
       <form onSubmit={handleCommand} className="flex items-center gap-2 border-t border-white/5 pt-3">
         <span className={`${textColors[theme]} font-bold animate-pulse`}>&gt;</span>
         <input
-          type="text" value={input} onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter system protocol..." className="flex-1 bg-transparent text-white outline-none placeholder-white/10 uppercase" autoFocus
+          type="text" 
+          value={input} 
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Enter system protocol..." 
+          className="flex-1 bg-transparent text-white outline-none placeholder-white/10 uppercase" 
+          autoFocus
         />
       </form>
     </div>
